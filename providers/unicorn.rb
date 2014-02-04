@@ -72,6 +72,11 @@ action :before_restart do
     unicorn_command_line new_resource.unicorn_command_line
     copy_on_write new_resource.copy_on_write
     enable_stats new_resource.enable_stats
+    if new_resource.bundler
+      gemfile_path = ::File.join(new_resource.path, 'current/Gemfile')
+      command = %Q(ENV['BUNDLE_GEMFILE'] = '#{gemfile_path}')
+      before_exec command
+    end
   end
 
   runit_service new_resource.name do
